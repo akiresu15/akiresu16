@@ -1,0 +1,68 @@
+#include <iostream>
+#include <cmath> // for sin() and other math functions
+
+// Function to calculate the binomial coefficient (n choose k)
+int binomialCoeff(int n, int k) {
+    if (k > n) return 0;
+    if (k == 0 || k == n) return 1;
+    
+    // Recursive relation: C(n, k) = C(n-1, k-1) + C(n-1, k)
+    return binomialCoeff(n-1, k-1) + binomialCoeff(n-1, k);
+}
+
+int main() {
+    int choice;
+    double num1, num2;
+    
+    std::cout << "Select operation:\n";
+    std::cout << "1. Addition\n";
+    std::cout << "2. Subtraction\n";
+    std::cout << "3. Multiplication\n";
+    std::cout << "4. Division\n";
+    std::cout << "5. Sine (angle in radians)\n";
+    std::cout << "6. Binomial Coefficient (n choose k)\n";
+    std::cout << "Enter your choice (1-6): ";
+    std::cin >> choice;
+
+    switch(choice) {
+        case 1:
+            std::cout << "Enter two numbers: ";
+            std::cin >> num1 >> num2;
+            std::cout << "Result: " << num1 + num2 << std::endl;
+            break;
+        case 2:
+            std::cout << "Enter two numbers: ";
+            std::cin >> num1 >> num2;
+            std::cout << "Result: " << num1 - num2 << std::endl;
+            break;
+        case 3:
+            std::cout << "Enter two numbers: ";
+            std::cin >> num1 >> num2;
+            std::cout << "Result: " << num1 * num2 << std::endl;
+            break;
+        case 4:
+            std::cout << "Enter two numbers: ";
+            std::cin >> num1 >> num2;
+            if (num2 != 0)
+                std::cout << "Result: " << num1 / num2 << std::endl;
+            else
+                std::cout << "Error! Division by zero." << std::endl;
+            break;
+        case 5:
+            std::cout << "Enter the angle in radians: ";
+            std::cin >> num1;
+            std::cout << "Result: " << sin(num1) << std::endl;
+            break;
+        case 6:
+            int n, k;
+            std::cout << "Enter n and k for binomial coefficient (n choose k): ";
+            std::cin >> n >> k;
+            std::cout << "Result: " << binomialCoeff(n, k) << std::endl;
+            break;
+        default:
+            std::cout << "Invalid choice!" << std::endl;
+            break;
+    }
+
+    return 0;
+}
