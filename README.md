@@ -1,2 +1,6 @@
 # akiresu16
-i am beginner and it's my first time to use a python github. 
+BACHELOR OF SCIENCE IN INFORMATION SYSTEM 
+CPP
+TURBO C 
+DEV C++
+CXXDROID 
