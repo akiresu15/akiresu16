@@ -1,0 +1,115 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <termios.h>
+#include <fcntl.h>
+
+#define WIDTH 40
+#define HEIGHT 20
+
+int ballX, ballY;
+int ballDirX = 1, ballDirY = 1;
+int paddleX;
+int paddleWidth = 8;
+
+int getKeyPress() {
+    struct termios oldt, newt;
+    int ch;
+    int oldf;
+
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    oldf = fcntl(STDIN_FILENO, F_GETFL);
+    fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+
+    ch = getchar();
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    fcntl(STDIN_FILENO, F_SETFL, oldf);
+
+    if (ch != EOF) {
+        ungetc(ch, stdin);
+        return 1;
+    }
+
+    return 0;
+}
+
+void draw() {
+    system("clear");
+    
+    // Top wall
+    for (int i = 0; i < WIDTH; i++)
+        printf("-");
+    printf("\n");
+
+    // Middle part
+    for (int y = 0; y < HEIGHT; y++) {
+        for (int x = 0; x < WIDTH; x++) {
+            if (x == 0 || x == WIDTH - 1)
+                printf("|");
+            else if (x == ballX && y == ballY)
+                printf("O");  // Ball
+            else if (y == HEIGHT - 1 && x >= paddleX && x < paddleX + paddleWidth)
+                printf("=");  // Paddle
+            else
+                printf(" ");
+        }
+        printf("\n");
+    }
+
+    // Bottom wall
+    for (int i = 0; i < WIDTH; i++)
+        printf("-");
+    printf("\n");
+}
+
+void update() {
+    ballX += ballDirX;
+    ballY += ballDirY;
+
+    // Ball bounces off walls
+    if (ballX <= 0 || ballX >= WIDTH - 1)
+        ballDirX = -ballDirX;
+    if (ballY <= 0)
+        ballDirY = -ballDirY;
+
+    // Ball hits the paddle
+    if (ballY == HEIGHT - 2 && ballX >= paddleX && ballX < paddleX + paddleWidth)
+        ballDirY = -ballDirY;
+
+    // Ball falls below paddle
+    if (ballY >= HEIGHT - 1) {
+        ballX = WIDTH / 2;
+        ballY = HEIGHT / 2;
+        ballDirX = 1;
+        ballDirY = 1;
+    }
+}
+
+void input() {
+    if (getKeyPress()) {
+        char ch = getchar();
+        if (ch == 'a' && paddleX > 0)
+            paddleX--;
+        if (ch == 'd' && paddleX < WIDTH - paddleWidth)
+            paddleX++;
+    }
+}
+
+int main() {
+    ballX = WIDTH / 2;
+    ballY = HEIGHT / 2;
+    paddleX = (WIDTH - paddleWidth) / 2;
+
+    while (1) {
+        draw();
+        input();
+        update();
+        usleep(50000); // Sleep for 50ms
+    }
+
+    return 0;
+}
